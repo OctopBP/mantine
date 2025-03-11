@@ -3,6 +3,7 @@ import {
     MantineSpacing, Paper, polymorphicFactory, PolymorphicFactory, ScrollArea, StylesApiProps,
     Table, useProps, useStyles
 } from '@mantine/core'
+import { Day } from '@mantine/dates'
 import { GanttChartProvider } from './GanttChart.context'
 import classes from './GanttChart.module.css'
 import { GanttChartSection } from './GanttChartSection/GanttChartSection'
@@ -69,10 +70,12 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
     styles,
     unstyled,
     vars,
+    shadow,
+    radius,
     padding,
     withBorder,
+    tasks = [],
     children,
-    tasks,
     ...others
   } = props;
 
@@ -89,14 +92,32 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
     varsResolver,
   });
 
+  // Generate dates for the calendar (current month)
+  const today = new Date();
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const calendarDays = Array.from(
+    { length: daysInMonth },
+    (_, i) => new Date(today.getFullYear(), today.getMonth(), i + 1)
+  );
+
   return (
-    <GanttChartProvider value={{ withBorder, getStyles }}>
-      <Paper component="div" ref={ref} withBorder={withBorder} {...getStyles('root')} {...others}>
+    <GanttChartProvider value={{ tasks }}>
+      <Paper
+        ref={ref}
+        {...getStyles('root')}
+        shadow={shadow}
+        radius={radius}
+        withBorder={withBorder}
+        {...others}
+      >
         <Flex>
           {/* Left side: Task table */}
           <Box
             {...getStyles('taskTable')}
-            style={{ width: '300px', borderRight: '1px solid var(--mantine-color-gray-3)' }}
+            style={{
+              width: '200px',
+              borderRight: '1px solid var(--mantine-color-gray-3)',
+            }}
           >
             <Table>
               <Table.Thead>
@@ -126,21 +147,33 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
                 {/* Calendar area */}
                 <Box
                   {...getStyles('calendarArea')}
-                  style={{ height: '50px', borderBottom: '1px solid var(--mantine-color-gray-3)' }}
+                  style={{
+                    borderBottom: '1px solid var(--mantine-color-gray-3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: '50px',
+                  }}
                 >
-                  {/* Placeholder for calendar days/weeks */}
+                  {/* Calendar days using Day component */}
                   <Box style={{ display: 'flex' }}>
-                    {Array.from({ length: 30 }).map((_, i) => (
-                      <Box
+                    {calendarDays.map((date, i) => (
+                      <Day
                         key={i}
+                        date={date}
+                        size="sm"
+                        static
+                        weekend={date.getDay() === 0 || date.getDay() === 6}
+                        highlightToday
                         style={{
                           width: '30px',
-                          textAlign: 'center',
-                          borderRight: i < 29 ? '1px solid var(--mantine-color-gray-2)' : 'none',
+                          height: '30px',
+                          margin: '0',
+                          borderRight:
+                            i < calendarDays.length - 1
+                              ? '1px solid var(--mantine-color-gray-2)'
+                              : 'none',
                         }}
-                      >
-                        {i + 1}
-                      </Box>
+                      />
                     ))}
                   </Box>
                 </Box>
@@ -210,7 +243,6 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
             </ScrollArea>
           </Box>
         </Flex>
-        {children}
       </Paper>
     </GanttChartProvider>
   );
