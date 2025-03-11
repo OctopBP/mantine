@@ -51,6 +51,7 @@ export * from './FileButton';
 export * from './FileInput';
 export * from './Floating';
 export * from './FocusTrap';
+export * from './GanttChart';
 export * from './Grid';
 export * from './Highlight';
 export * from './HoverCard';

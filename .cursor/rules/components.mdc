@@ -1,0 +1,268 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Cursor Rules for Mantine Components
+
+This document outlines the standard cursor behavior patterns to follow when creating or modifying Mantine components. Consistent cursor behavior improves usability and maintains a cohesive user experience across the library.
+
+## General Principles
+
+1. **Cursor should indicate interactivity**: Use appropriate cursor styles to indicate when elements are interactive
+2. **Maintain consistency**: Follow the same cursor patterns across all components
+3. **Respect accessibility**: Ensure cursor behavior aligns with accessibility best practices
+4. **Use semantic cursors**: Choose cursor styles that match the expected interaction
+
+## Standard Cursor Types
+
+| Cursor Type | Usage | CSS Property |
+|-------------|-------|--------------|
+| `default` | Non-interactive elements | `cursor: default;` |
+| `pointer` | Clickable elements (buttons, links, etc.) | `cursor: pointer;` |
+| `grab` | Elements that can be dragged | `cursor: grab;` |
+| `grabbing` | Elements being actively dragged | `cursor: grabbing;` |
+| `text` | Selectable text | `cursor: text;` |
+| `not-allowed` | Disabled interactive elements | `cursor: not-allowed;` |
+| `ew-resize` | Horizontal resize handles | `cursor: ew-resize;` |
+| `ns-resize` | Vertical resize handles | `cursor: ns-resize;` |
+| `nwse-resize` | Diagonal resize handles (top-left to bottom-right) | `cursor: nwse-resize;` |
+| `nesw-resize` | Diagonal resize handles (top-right to bottom-left) | `cursor: nesw-resize;` |
+| `move` | Elements that can be moved in any direction | `cursor: move;` |
+| `help` | Elements with additional information (tooltips) | `cursor: help;` |
+| `crosshair` | Precision selection or drawing | `cursor: crosshair;` |
+
+## Implementation Guidelines
+
+### 1. CSS Module Implementation
+
+Define cursor styles in your component's CSS module:
+
+```css
+/* Base element */
+.element {
+    cursor: default;
+}
+
+/* Interactive states */
+.elementInteractive {
+    cursor: pointer;
+}
+
+.elementDraggable {
+    cursor: grab;
+}
+
+.elementDragging {
+    cursor: grabbing !important;
+    /* Use !important for active states */
+}
+
+/* Resize handles */
+.resizeHandleHorizontal {
+    cursor: ew-resize;
+}
+
+.resizeHandleVertical {
+    cursor: ns-resize;
+}
+
+/* Disabled state */
+.elementDisabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+```
+
+### 2. Conditional Class Application
+
+Apply cursor classes conditionally based on component state:
+
+```tsx
+const elementClasses = cx(
+  classes.element,
+  {
+    [classes.elementInteractive]: interactive && !disabled,
+    [classes.elementDraggable]: draggable && !disabled,
+    [classes.elementDragging]: isDragging,
+    [classes.elementDisabled]: disabled
+  }
+);
+
+return <div className={elementClasses} {...props} />;
+```
+
+### 3. Using Mantine's Mod Props
+
+Leverage Mantine's mod props for cursor states:
+
+```tsx
+<Box
+  mod={{
+    interactive: !disabled && onClick,
+    draggable: !disabled && draggable,
+    dragging: isDragging,
+    disabled
+  }}
+  {...getStyles('element')}
+/>
+```
+
+### 4. CSS Selectors with Mod Props
+
+Define cursor styles using mod-based selectors:
+
+```css
+.element {
+    cursor: default;
+}
+
+.element[data-interactive] {
+    cursor: pointer;
+}
+
+.element[data-draggable] {
+    cursor: grab;
+}
+
+.element[data-dragging] {
+    cursor: grabbing !important;
+}
+
+.element[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+```
+
+## Component-Specific Guidelines
+
+### Buttons and Controls
+
+* Use `cursor: pointer` for all clickable controls
+* Use `cursor: not-allowed` for disabled controls
+* Maintain the same cursor for hover states unless interaction type changes
+
+### Draggable Elements
+
+* Use `cursor: grab` for elements that can be dragged
+* Switch to `cursor: grabbing` during active drag
+* Return to `cursor: grab` when drag ends
+* Use `cursor: not-allowed` for elements that would normally be draggable but are currently disabled
+
+### Resizable Elements
+
+* Use directional resize cursors for resize handles (`ew-resize`,   `ns-resize`, etc.)
+* Use compound resize cursors for corner handles (`nwse-resize`,   `nesw-resize`)
+* Maintain resize cursor during active resize operation
+
+### Interactive Tables and Grids
+
+* Use `cursor: default` for non-interactive cells
+* Use `cursor: pointer` for clickable cells
+* Use `cursor: text` for editable cells
+* Use appropriate resize cursors for column/row resize handles
+
+### Charts and Data Visualization
+
+* Use `cursor: default` for non-interactive chart elements
+* Use `cursor: pointer` for clickable data points, legends, or interactive elements
+* Use `cursor: crosshair` for selection or measurement tools
+* Use `cursor: grab`/`cursor: grabbing` for panning operations
+
+### Form Elements
+
+* Use `cursor: text` for text inputs
+* Use `cursor: pointer` for checkboxes, radio buttons, and select elements
+* Use `cursor: not-allowed` for disabled form elements
+
+## Accessibility Considerations
+
+* Ensure cursor changes are accompanied by appropriate ARIA attributes
+* Maintain focus indicators alongside cursor changes
+* Provide keyboard alternatives for all cursor-based interactions
+* Test cursor behavior with screen readers and keyboard navigation
+
+## Examples from Mantine Components
+
+### Table Component
+
+```css
+.tr {
+    cursor: default;
+}
+
+.tr[data-with-row-border] {
+    border-bottom: 1px solid var(--table-border-color);
+}
+
+.tr[data-striped] {
+    background-color: var(--table-striped-color);
+}
+
+.tr[data-highlight-on-hover]:hover {
+    background-color: var(--table-highlight-on-hover-color);
+}
+
+/* Interactive row */
+.tr[data-interactive] {
+    cursor: pointer;
+}
+```
+
+### Calendar Component
+
+```css
+.calendarHeaderControl {
+    cursor: pointer;
+}
+
+.calendarHeaderControl[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.day {
+    cursor: default;
+}
+
+.day[data-interactive]:not([data-disabled]) {
+    cursor: pointer;
+}
+
+.day[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+```
+
+### AreaChart Component
+
+```css
+.dot {
+    cursor: default;
+}
+
+.dot[data-interactive] {
+    cursor: pointer;
+}
+
+.legendItem {
+    cursor: pointer;
+}
+
+.legendItem[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+```
+
+## Best Practices
+
+1. **Be consistent**: Use the same cursor patterns across similar interactions
+2. **Be intentional**: Only change the cursor when it provides meaningful information
+3. **Be responsive**: Update cursor immediately when interaction state changes
+4. **Be accessible**: Ensure cursor changes are accompanied by appropriate ARIA attributes
+5. **Be performant**: Avoid cursor changes that cause layout shifts or repaints
+
+By following these cursor rules, you'll create components that provide intuitive feedback to users and maintain consistency with the rest of the Mantine library.

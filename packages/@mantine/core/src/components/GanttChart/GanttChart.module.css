@@ -1,0 +1,27 @@
+.root {
+  --card-padding: var(--gantt-chart-padding, var(--mantine-spacing-md));
+  padding: var(--card-padding);
+  position: relative;
+}
+
+.section {
+  display: block;
+  margin-left: calc(-1 * var(--card-padding));
+  margin-right: calc(-1 * var(--card-padding));
+  padding-left: var(--card-padding);
+  padding-right: var(--card-padding);
+
+  &:first-of-type {
+    margin-top: calc(-1 * var(--card-padding));
+    padding-top: var(--card-padding);
+    border-top-left-radius: var(--card-radius, 0);
+    border-top-right-radius: var(--card-radius, 0);
+  }
+
+  &:last-of-type {
+    margin-bottom: calc(-1 * var(--card-padding));
+    padding-bottom: var(--card-padding);
+    border-bottom-left-radius: var(--card-radius, 0);
+    border-bottom-right-radius: var(--card-radius, 0);
+  }
+}
