@@ -164,15 +164,6 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
                         static
                         weekend={date.getDay() === 0 || date.getDay() === 6}
                         highlightToday
-                        style={{
-                          width: '30px',
-                          height: '30px',
-                          margin: '0',
-                          borderRight:
-                            i < calendarDays.length - 1
-                              ? '1px solid var(--mantine-color-gray-2)'
-                              : 'none',
-                        }}
                       />
                     ))}
                   </Box>
