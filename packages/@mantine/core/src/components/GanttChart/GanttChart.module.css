@@ -25,3 +25,26 @@
     border-bottom-right-radius: var(--card-radius, 0);
   }
 }
+
+.taskTable {
+  overflow: hidden;
+  border-right: 1px solid var(--mantine-color-gray-3);
+}
+
+.calendarArea {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--mantine-color-body);
+}
+
+.tasksArea {
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.rightSection {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

@@ -1,37 +1,26 @@
-import { Paper } from '../Paper'
 import { GanttChart } from './GanttChart'
 
 export default { title: 'GanttChart' };
 
 export function Usage() {
   return (
-    <div style={{ maxWidth: 600, padding: 40, margin: 'auto' }}>
-      <GanttChart withBorder>
-        <GanttChart.Section inheritPadding py="md">
-          GanttChart section 1
-        </GanttChart.Section>
-        <div>Content 1</div>
-        <GanttChart.Section inheritPadding>GanttChart section 2</GanttChart.Section>
-        <div>Content 2</div>
-      </GanttChart>
+    <div style={{ maxWidth: '90%', padding: 40, margin: 'auto' }}>
+      <GanttChart withBorder />
     </div>
   );
 }
 
-export function CustomComponent() {
+export function CustomWidth() {
   return (
-    <div style={{ maxWidth: 600, padding: 40, margin: 'auto' }}>
-      <GanttChart component="article">
-        <GanttChart.Section>GanttChart section</GanttChart.Section>
-        <Paper p="md">Content</Paper>
-      </GanttChart>
+    <div style={{ maxWidth: '90%', padding: 40, margin: 'auto' }}>
+      <GanttChart withBorder style={{ height: '500px' }} />
     </div>
   );
 }
 
 export function Unstyled() {
   return (
-    <div style={{ maxWidth: 600, padding: 40, margin: 'auto' }}>
+    <div style={{ maxWidth: '90%', padding: 40, margin: 'auto' }}>
       <GanttChart unstyled>Unstyled GanttChart</GanttChart>
     </div>
   );
