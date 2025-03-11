@@ -121,34 +121,32 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
 
           {/* Right side: Calendar and task blocks */}
           <Box {...getStyles('rightSection')} style={{ flex: 1 }}>
-            {/* Calendar area */}
-            <Box
-              {...getStyles('calendarArea')}
-              style={{ height: '50px', borderBottom: '1px solid var(--mantine-color-gray-3)' }}
-            >
-              <ScrollArea>
-                <Box style={{ display: 'flex', minWidth: '1000px' }}>
+            <ScrollArea>
+              <Box style={{ minWidth: '1000px' }}>
+                {/* Calendar area */}
+                <Box
+                  {...getStyles('calendarArea')}
+                  style={{ height: '50px', borderBottom: '1px solid var(--mantine-color-gray-3)' }}
+                >
                   {/* Placeholder for calendar days/weeks */}
-                  {Array.from({ length: 30 }).map((_, i) => (
-                    <Box
-                      key={i}
-                      style={{
-                        width: '30px',
-                        textAlign: 'center',
-                        borderRight: i < 29 ? '1px solid var(--mantine-color-gray-2)' : 'none',
-                      }}
-                    >
-                      {i + 1}
-                    </Box>
-                  ))}
+                  <Box style={{ display: 'flex' }}>
+                    {Array.from({ length: 30 }).map((_, i) => (
+                      <Box
+                        key={i}
+                        style={{
+                          width: '30px',
+                          textAlign: 'center',
+                          borderRight: i < 29 ? '1px solid var(--mantine-color-gray-2)' : 'none',
+                        }}
+                      >
+                        {i + 1}
+                      </Box>
+                    ))}
+                  </Box>
                 </Box>
-              </ScrollArea>
-            </Box>
 
-            {/* Tasks area */}
-            <Box {...getStyles('tasksArea')}>
-              <ScrollArea>
-                <Box style={{ minWidth: '1000px' }}>
+                {/* Tasks area */}
+                <Box {...getStyles('tasksArea')}>
                   {/* Placeholder for task blocks */}
                   <Box
                     style={{
@@ -208,8 +206,8 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
                     />
                   </Box>
                 </Box>
-              </ScrollArea>
-            </Box>
+              </Box>
+            </ScrollArea>
           </Box>
         </Flex>
         {children}
