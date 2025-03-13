@@ -2,6 +2,16 @@
   --card-padding: var(--gantt-chart-padding, var(--mantine-spacing-md));
   padding: var(--card-padding);
   position: relative;
+
+  @mixin where-light {
+    --gantt-border-color: var(--mantine-color-gray-3);
+    --gantt-row-border-color: var(--mantine-color-gray-2);
+  }
+
+  @mixin where-dark {
+    --gantt-border-color: var(--mantine-color-dark-4);
+    --gantt-row-border-color: var(--mantine-color-dark-5);
+  }
 }
 
 .section {
@@ -28,7 +38,8 @@
 
 .taskTable {
   overflow: hidden;
-  border-right: 1px solid var(--mantine-color-gray-3);
+  border-right: rem(1px) solid var(--gantt-border-color);
+  width: 200px;
 }
 
 .calendarArea {
@@ -36,6 +47,10 @@
   top: 0;
   z-index: 2;
   background-color: var(--mantine-color-body);
+  border-bottom: rem(1px) solid var(--gantt-border-color);
+  display: flex;
+  align-items: center;
+  height: 50px;
 }
 
 .tasksArea {
@@ -47,4 +62,41 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 1;
+}
+
+.calendarDays {
+  display: flex;
+}
+
+.taskRow {
+  height: 40px;
+  position: relative;
+  border-bottom: rem(1px) solid var(--gantt-row-border-color);
+}
+
+.taskBlock {
+  position: absolute;
+  height: 30px;
+  border-radius: 4px;
+  margin: 5px 0;
+  background: var(--mantine-color-blue-filled);
+  color: var(--mantine-color-white);
+  transition: background-color 150ms ease;
+}
+
+.taskBlock[data-mantine-color] {
+  background: var(--mantine-color-filled);
+}
+
+.taskBlock:hover {
+  background: var(--mantine-color-blue-filled-hover);
+}
+
+.taskBlock[data-mantine-color]:hover {
+  background: var(--mantine-color-filled-hover);
+}
+
+.scrollContainer {
+  min-width: 1000px;
 }
