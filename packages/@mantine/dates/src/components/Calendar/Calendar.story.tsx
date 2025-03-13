@@ -1,5 +1,5 @@
-import { DatesProvider } from '../DatesProvider';
-import { Calendar } from './Calendar';
+import { DatesProvider } from '../DatesProvider'
+import { Calendar } from './Calendar'
 
 export default { title: 'Calendar' };
 
@@ -80,5 +80,72 @@ export function Sizes() {
   const sizes = (['xs', 'sm', 'md', 'lg', 'xl'] as const).map((size) => (
     <Calendar size={size} key={size} mt="xl" />
   ));
+
   return <div style={{ padding: 40 }}>{sizes}</div>;
+}
+
+export function Controlled() {
+  return (
+    <div style={{ padding: 40 }}>
+      <Calendar level="year" />
+    </div>
+  );
+}
+
+export function MinMax() {
+  return (
+    <div style={{ padding: 40 }}>
+      <Calendar maxLevel="year" minLevel="month" />
+    </div>
+  );
+}
+
+export function DefaultDate() {
+  return (
+    <div style={{ padding: 40 }}>
+      <Calendar defaultDate={new Date(2022, 3, 11)} />
+    </div>
+  );
+}
+
+export function Locale() {
+  return (
+    <div style={{ padding: 40 }}>
+      <DatesProvider settings={{ locale: 'ru' }}>
+        <Calendar defaultDate={new Date(2022, 3, 11)} />
+      </DatesProvider>
+    </div>
+  );
+}
+
+export function FirstDayOfWeek() {
+  return (
+    <div style={{ padding: 40 }}>
+      <Calendar firstDayOfWeek={0} />
+    </div>
+  );
+}
+
+export function WeekendDays() {
+  return (
+    <div style={{ padding: 40 }}>
+      <Calendar weekendDays={[1, 3, 5]} />
+    </div>
+  );
+}
+
+export function HideWeekdays() {
+  return (
+    <div style={{ padding: 40 }}>
+      <Calendar hideWeekdays />
+    </div>
+  );
+}
+
+export function HideOutsideDates() {
+  return (
+    <div style={{ padding: 40 }}>
+      <Calendar hideOutsideDates />
+    </div>
+  );
 }

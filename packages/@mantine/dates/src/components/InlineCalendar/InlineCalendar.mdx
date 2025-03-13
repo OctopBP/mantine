@@ -1,0 +1,97 @@
+---
+group: 'mantine-dates'
+package: '@mantine/dates'
+title: 'InlineCalendar'
+order: 1
+slug: /dates/inline-calendar/
+category: 'dates'
+description: 'Display dates from 1 to the end of the month in a single line'
+componentPrefix: 'InlineCalendar'
+props: ['InlineCalendar']
+import: "import { InlineCalendar } from '@mantine/dates';"
+source: 'mantine-dates/src/components/InlineCalendar/InlineCalendar.tsx'
+docs: 'dates/InlineCalendar.mdx'
+styles: ['InlineCalendar']
+---
+
+import { InlineCalendarDemos } from '@mantine/demos';
+
+## Usage
+
+InlineCalendar displays dates from 1 to the end of the month in a single line. It's useful when you need to show a compact calendar view.
+
+<Demo data={InlineCalendarDemos.usage} />
+
+## Props
+
+InlineCalendar accepts all props from Box component and the following props:
+
+- **date** - controlled date value
+- **defaultDate** - uncontrolled date value
+- **onDateChange** - called when date changes
+- **locale** - dayjs locale, defaults to value defined in DatesProvider
+- **weekendDays** - indices of weekend days, 0-6, where 0 is Sunday and 6 is Saturday
+- **getDayProps** - adds props to Day component based on date
+- **excludeDate** - callback function to determine whether the day should be disabled
+- **minDate** - minimum possible date
+- **maxDate** - maximum possible date
+- **renderDay** - controls day value rendering
+- **getDayAriaLabel** - assigns aria-label to days based on date
+- **size** - controls size
+- **withCellSpacing** - determines whether controls should be separated by spacing
+- **highlightToday** - determines whether today should be highlighted with a border
+- **monthLabelFormat** - dayjs format to display month label or a function that returns month label based on month value
+
+## Sizes
+
+InlineCalendar has 5 predefined sizes: xs, sm, md, lg, xl. The default size is md.
+
+<Demo data={InlineCalendarDemos.sizes} />
+
+## Highlight today
+
+Set `highlightToday` prop to highlight the current day with a border.
+
+<Demo data={InlineCalendarDemos.highlightToday} />
+
+## Cell spacing
+
+By default, InlineCalendar has spacing between cells. You can disable it by setting `withCellSpacing={false}`.
+
+<Demo data={InlineCalendarDemos.withCellSpacing} />
+
+## Min and max dates
+
+Set `minDate` and `maxDate` props to limit the range of dates that can be selected.
+
+<Demo data={InlineCalendarDemos.minMaxDate} />
+
+## Custom month label
+
+You can customize the month label by setting `monthLabelFormat` prop. It can be either a string in dayjs format or a function that returns a React node.
+
+<Demo data={InlineCalendarDemos.customMonthLabel} />
+
+## Custom day rendering
+
+You can customize the day rendering by setting `renderDay` prop. It should be a function that returns a React node.
+
+<Demo data={InlineCalendarDemos.customDayRender} />
+
+## Multiple calendars
+
+You can render multiple calendars by rendering multiple InlineCalendar components.
+
+<Demo data={InlineCalendarDemos.multipleCalendars} />
+
+## Weekend days
+
+By default, Saturday and Sunday are considered weekend days. You can change it by setting `weekendDays` prop.
+
+<Demo data={InlineCalendarDemos.weekendDays} />
+
+## Controlled
+
+InlineCalendar can be controlled with `date` and `onDateChange` props.
+
+<Demo data={InlineCalendarDemos.controlled} />

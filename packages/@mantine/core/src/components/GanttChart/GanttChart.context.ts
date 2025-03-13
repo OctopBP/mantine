@@ -1,4 +1,5 @@
 import { createSafeContext, FactoryPayload, GetStylesApi } from '../../core'
+import { Task } from './GanttChart'
 
 // Define a minimal interface that satisfies FactoryPayload
 interface GanttChartFactoryPayload extends FactoryPayload {
@@ -9,6 +10,7 @@ interface GanttChartFactoryPayload extends FactoryPayload {
 interface GanttChartContextValue {
   withBorder?: boolean;
   getStyles: GetStylesApi<GanttChartFactoryPayload>;
+  data?: Task[];
 }
 
 export const [GanttChartProvider, useGanttChartContext] = createSafeContext<GanttChartContextValue>(

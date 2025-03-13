@@ -1,20 +1,54 @@
+import { useState } from 'react';
 import {
-    Box, BoxProps, createVarsResolver, Flex, getSpacing, MantineRadius, MantineShadow,
-    MantineSpacing, Paper, polymorphicFactory, PolymorphicFactory, ScrollArea, StylesApiProps,
-    Table, useProps, useStyles
-} from '@mantine/core'
-import { Day } from '@mantine/dates'
-import { GanttChartProvider } from './GanttChart.context'
-import classes from './GanttChart.module.css'
-import { GanttChartSection } from './GanttChartSection/GanttChartSection'
+  Box,
+  BoxProps,
+  createVarsResolver,
+  Flex,
+  getSpacing,
+  MantineColor,
+  MantineRadius,
+  MantineShadow,
+  MantineSpacing,
+  Paper,
+  polymorphicFactory,
+  PolymorphicFactory,
+  ScrollArea,
+  Select,
+  StylesApiProps,
+  Table,
+  Text,
+  useProps,
+  useStyles,
+} from '@mantine/core';
+import { Day } from '@mantine/dates';
+import { GanttChartProvider } from './GanttChart.context';
+import { GanttChartSection } from './GanttChartSection/GanttChartSection';
+import classes from './GanttChart.module.css';
+
+export type GanttChartPresentation = 'hours' | 'day' | 'week' | 'month' | 'year' | '5years';
+
+export interface Task {
+  id: string;
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  color?: MantineColor;
+}
 
 export type GanttChartStylesNames =
   | 'root'
   | 'section'
   | 'taskTable'
   | 'calendarArea'
+  | 'calendarHeader'
   | 'tasksArea'
-  | 'rightSection';
+  | 'rightSection'
+  | 'scrollContainer'
+  | 'calendarDays'
+  | 'taskRow'
+  | 'taskBlock'
+  | 'presentationSelect'
+  | 'timelineItem';
 
 export type GanttChartCssVariables = {
   root: '--gantt-chart-padding';
@@ -34,7 +68,13 @@ export interface GanttChartProps extends BoxProps, StylesApiProps<GanttChartFact
   withBorder?: boolean;
 
   /** List of tasks to display in the Gantt chart */
-  tasks?: any[];
+  data?: Task[];
+
+  /** Current presentation mode, `'month'` by default */
+  presentation?: GanttChartPresentation;
+
+  /** Called when presentation mode changes */
+  onPresentationChange?: (presentation: GanttChartPresentation) => void;
 
   /** GanttChart content */
   children?: React.ReactNode;
@@ -53,6 +93,7 @@ export type GanttChartFactory = PolymorphicFactory<{
 
 const defaultProps: Partial<GanttChartProps> = {
   padding: 'md',
+  presentation: 'month',
 };
 
 const varsResolver = createVarsResolver<GanttChartFactory>((_, { padding }) => ({
@@ -60,6 +101,97 @@ const varsResolver = createVarsResolver<GanttChartFactory>((_, { padding }) => (
     '--gantt-chart-padding': getSpacing(padding),
   },
 }));
+
+const presentationOptions = [
+  { value: 'hours', label: 'Hours' },
+  { value: 'day', label: 'Day' },
+  { value: 'week', label: 'Week' },
+  { value: 'month', label: 'Month' },
+  { value: 'year', label: 'Year' },
+  { value: '5years', label: '5 Years' },
+];
+
+const getTimelineData = (presentation: GanttChartPresentation) => {
+  const today = new Date();
+  const timeline = [];
+
+  switch (presentation) {
+    case 'hours':
+      // Generate 24 hours
+      for (let i = 0; i < 24; i++) {
+        const date = new Date();
+        date.setHours(i, 0, 0, 0);
+        timeline.push({
+          date,
+          label: `${i.toString().padStart(2, '0')}:00`,
+        });
+      }
+      break;
+
+    case 'day':
+      // Generate next 7 days
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        timeline.push({
+          date,
+          label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        });
+      }
+      break;
+
+    case 'week':
+      // Generate 4 weeks
+      for (let i = 0; i < 4; i++) {
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() + i * 7);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+        timeline.push({
+          date: startDate,
+          label: `Week ${i + 1}`,
+          subLabel: `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+        });
+      }
+      break;
+
+    case 'month':
+      // Generate 12 months
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(today.getFullYear(), i);
+        timeline.push({
+          date,
+          label: date.toLocaleDateString('en-US', { month: 'short' }),
+        });
+      }
+      break;
+
+    case 'year':
+      // Generate 5 years
+      for (let i = 0; i < 5; i++) {
+        const date = new Date(today.getFullYear() + i);
+        timeline.push({
+          date,
+          label: date.getFullYear().toString(),
+        });
+      }
+      break;
+
+    case '5years':
+      // Generate 25 years in 5-year groups
+      for (let i = 0; i < 5; i++) {
+        const startYear = today.getFullYear() + i * 5;
+        const endYear = startYear + 4;
+        timeline.push({
+          date: new Date(startYear),
+          label: `${startYear}-${endYear}`,
+        });
+      }
+      break;
+  }
+
+  return timeline;
+};
 
 export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) => {
   const props = useProps('GanttChart', defaultProps, _props);
@@ -74,10 +206,25 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
     radius,
     padding,
     withBorder,
-    tasks = [],
+    data = [],
+    presentation: controlledPresentation,
+    onPresentationChange,
     children,
     ...others
   } = props;
+
+  const [uncontrolledPresentation, setUncontrolledPresentation] =
+    useState<GanttChartPresentation>('month');
+  const presentation = controlledPresentation ?? uncontrolledPresentation;
+  const handlePresentationChange = (value: string | null) => {
+    if (value) {
+      if (onPresentationChange) {
+        onPresentationChange(value as GanttChartPresentation);
+      } else {
+        setUncontrolledPresentation(value as GanttChartPresentation);
+      }
+    }
+  };
 
   const getStyles = useStyles<GanttChartFactory>({
     name: 'GanttChart',
@@ -92,16 +239,62 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
     varsResolver,
   });
 
-  // Generate dates for the calendar (current month)
-  const today = new Date();
-  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const calendarDays = Array.from(
-    { length: daysInMonth },
-    (_, i) => new Date(today.getFullYear(), today.getMonth(), i + 1)
-  );
+  const timelineData = getTimelineData(presentation);
+
+  const renderTimelineItem = (item: { date: Date; label: string; subLabel?: string }) => {
+    switch (presentation) {
+      case 'hours':
+        return (
+          <Box {...getStyles('timelineItem')}>
+            <Text size="sm" fw={500}>
+              {item.label}
+            </Text>
+          </Box>
+        );
+
+      case 'day':
+        return (
+          <Day
+            date={item.date}
+            size="sm"
+            static
+            highlightToday
+            weekend={item.date.getDay() === 0 || item.date.getDay() === 6}
+          />
+        );
+
+      case 'week':
+      case 'month':
+        return (
+          <Box {...getStyles('timelineItem')}>
+            <Text size="sm" fw={500}>
+              {item.label}
+            </Text>
+            {item.subLabel && (
+              <Text size="xs" c="dimmed">
+                {item.subLabel}
+              </Text>
+            )}
+          </Box>
+        );
+
+      case 'year':
+      case '5years':
+        return (
+          <Box {...getStyles('timelineItem')}>
+            <Text size="sm" fw={500}>
+              {item.label}
+            </Text>
+          </Box>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <GanttChartProvider value={{ tasks }}>
+    <GanttChartProvider value={{ data, getStyles }}>
       <Paper
         ref={ref}
         {...getStyles('root')}
@@ -112,13 +305,7 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
       >
         <Flex>
           {/* Left side: Task table */}
-          <Box
-            {...getStyles('taskTable')}
-            style={{
-              width: '200px',
-              borderRight: '1px solid var(--mantine-color-gray-3)',
-            }}
-          >
+          <Box {...getStyles('taskTable')}>
             <Table>
               <Table.Thead>
                 <Table.Tr>
@@ -126,109 +313,54 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {/* Placeholder for task rows */}
-                <Table.Tr>
-                  <Table.Td>Task 1</Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Td>Task 2</Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Td>Task 3</Table.Td>
-                </Table.Tr>
+                {data.map((task) => (
+                  <Table.Tr key={task.id}>
+                    <Table.Td>{task.title}</Table.Td>
+                  </Table.Tr>
+                ))}
               </Table.Tbody>
             </Table>
           </Box>
 
           {/* Right side: Calendar and task blocks */}
-          <Box {...getStyles('rightSection')} style={{ flex: 1 }}>
+          <Box {...getStyles('rightSection')}>
+            <Box {...getStyles('calendarHeader')}>
+              <Select
+                {...getStyles('presentationSelect')}
+                data={presentationOptions}
+                value={presentation}
+                onChange={handlePresentationChange}
+                size="xs"
+              />
+            </Box>
             <ScrollArea>
-              <Box style={{ minWidth: '1000px' }}>
+              <Box {...getStyles('scrollContainer')}>
                 {/* Calendar area */}
-                <Box
-                  {...getStyles('calendarArea')}
-                  style={{
-                    borderBottom: '1px solid var(--mantine-color-gray-3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: '50px',
-                  }}
-                >
-                  {/* Calendar days using Day component */}
-                  <Box style={{ display: 'flex' }}>
-                    {calendarDays.map((date, i) => (
-                      <Day
-                        key={i}
-                        date={date}
-                        size="sm"
-                        static
-                        weekend={date.getDay() === 0 || date.getDay() === 6}
-                        highlightToday
-                      />
+                <Box {...getStyles('calendarArea')}>
+                  {/* Timeline days */}
+                  <Box {...getStyles('calendarDays')}>
+                    {timelineData.map((item, i) => (
+                      <Box key={i} {...getStyles('timelineItem')}>
+                        {renderTimelineItem(item)}
+                      </Box>
                     ))}
                   </Box>
                 </Box>
 
                 {/* Tasks area */}
                 <Box {...getStyles('tasksArea')}>
-                  {/* Placeholder for task blocks */}
-                  <Box
-                    style={{
-                      height: '40px',
-                      position: 'relative',
-                      borderBottom: '1px solid var(--mantine-color-gray-2)',
-                    }}
-                  >
-                    <Box
-                      style={{
-                        position: 'absolute',
-                        left: '60px',
-                        width: '120px',
-                        height: '30px',
-                        background: 'var(--mantine-color-blue-5)',
-                        borderRadius: '4px',
-                        margin: '5px 0',
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    style={{
-                      height: '40px',
-                      position: 'relative',
-                      borderBottom: '1px solid var(--mantine-color-gray-2)',
-                    }}
-                  >
-                    <Box
-                      style={{
-                        position: 'absolute',
-                        left: '150px',
-                        width: '90px',
-                        height: '30px',
-                        background: 'var(--mantine-color-green-5)',
-                        borderRadius: '4px',
-                        margin: '5px 0',
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    style={{
-                      height: '40px',
-                      position: 'relative',
-                      borderBottom: '1px solid var(--mantine-color-gray-2)',
-                    }}
-                  >
-                    <Box
-                      style={{
-                        position: 'absolute',
-                        left: '30px',
-                        width: '180px',
-                        height: '30px',
-                        background: 'var(--mantine-color-orange-5)',
-                        borderRadius: '4px',
-                        margin: '5px 0',
-                      }}
-                    />
-                  </Box>
+                  {data.map((task) => (
+                    <Box key={task.id} {...getStyles('taskRow')}>
+                      <Box
+                        {...getStyles('taskBlock')}
+                        data-mantine-color={task.color}
+                        style={{
+                          left: `${task.startDate.getDate() * 40}px`,
+                          width: `${(task.endDate.getDate() - task.startDate.getDate() + 1) * 40}px`,
+                        }}
+                      />
+                    </Box>
+                  ))}
                 </Box>
               </Box>
             </ScrollArea>

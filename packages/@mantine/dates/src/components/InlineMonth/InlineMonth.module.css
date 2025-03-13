@@ -1,0 +1,22 @@
+.inlineMonth {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  margin-top: var(--mantine-spacing-sm);
+}
+
+.monthRow {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: var(--mantine-spacing-xs);
+}
+
+.monthCell {
+  padding: 0;
+}
+
+.monthCell[data-with-spacing] {
+  padding: calc(var(--mantine-spacing-xs) / 2);
+}

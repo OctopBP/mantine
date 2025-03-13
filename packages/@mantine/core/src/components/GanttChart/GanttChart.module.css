@@ -43,14 +43,60 @@
 }
 
 .calendarArea {
-  position: sticky;
-  top: 0;
-  z-index: 2;
   background-color: var(--mantine-color-body);
   border-bottom: rem(1px) solid var(--gantt-border-color);
+}
+
+.calendarHeader {
+  background-color: var(--mantine-color-body);
   display: flex;
   align-items: center;
-  height: 50px;
+  justify-content: flex-end;
+  height: 32px;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  border-bottom: rem(1px) solid var(--gantt-border-color);
+}
+
+.calendarDays {
+  display: flex;
+  flex: 1;
+  height: 40px;
+  padding: 0 var(--mantine-spacing-md);
+  gap: var(--mantine-spacing-xs);
+}
+
+.timelineItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  text-align: center;
+  border-right: rem(1px) solid var(--gantt-border-color);
+  padding: var(--mantine-spacing-xs);
+}
+
+.timelineItem:last-child {
+  border-right: none;
+}
+
+.timelineItem :global(.mantine-Day-root) {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+}
+
+.timelineItem :global(.mantine-Day-root[data-weekend]) {
+  color: var(--mantine-color-red-6);
+}
+
+.timelineItem :global(.mantine-Day-root[data-highlight-today]) {
+  border: rem(1px) solid var(--mantine-color-blue-6);
 }
 
 .tasksArea {
@@ -63,10 +109,6 @@
   flex-direction: column;
   overflow: hidden;
   flex: 1;
-}
-
-.calendarDays {
-  display: flex;
 }
 
 .taskRow {
@@ -99,4 +141,8 @@
 
 .scrollContainer {
   min-width: 1000px;
+}
+
+.presentationSelect {
+  width: 120px;
 }
