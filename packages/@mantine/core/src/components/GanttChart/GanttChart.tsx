@@ -72,10 +72,7 @@ export interface GanttChartProps extends BoxProps, StylesApiProps<GanttChartFact
   data?: Task[];
 
   /** Current presentation mode, `'month'` by default */
-  presentation?: GanttChartPresentation;
-
-  /** Called when presentation mode changes */
-  onPresentationChange?: (presentation: GanttChartPresentation) => void;
+  defaultPresentation?: GanttChartPresentation;
 
   /** GanttChart content */
   children?: React.ReactNode;
@@ -94,7 +91,7 @@ export type GanttChartFactory = PolymorphicFactory<{
 
 const defaultProps: Partial<GanttChartProps> = {
   padding: 'md',
-  presentation: 'month',
+  defaultPresentation: 'month',
 };
 
 const varsResolver = createVarsResolver<GanttChartFactory>((_, { padding }) => ({
@@ -208,22 +205,15 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
     padding,
     withBorder,
     data = [],
-    presentation: controlledPresentation,
-    onPresentationChange,
+    defaultPresentation = 'month',
     children,
     ...others
   } = props;
 
-  const [uncontrolledPresentation, setUncontrolledPresentation] =
-    useState<GanttChartPresentation>('month');
-  const presentation = controlledPresentation ?? uncontrolledPresentation;
+  const [presentation, setPresentation] = useState<GanttChartPresentation>(defaultPresentation);
   const handlePresentationChange = (value: string | null) => {
     if (value) {
-      if (onPresentationChange) {
-        onPresentationChange(value as GanttChartPresentation);
-      } else {
-        setUncontrolledPresentation(value as GanttChartPresentation);
-      }
+      setPresentation(value as GanttChartPresentation);
     }
   };
 
@@ -320,6 +310,63 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
     }
   };
 
+  const getTaskBlockStyle = (task: Task) => {
+    const timelineStart = timelineData[0].date;
+    const itemWidth = 40; // Width of each timeline item
+
+    let startPosition = 0;
+    let duration = 0;
+    let startYear: number;
+    let taskStartYear: number;
+    let taskEndYear: number;
+
+    switch (presentation) {
+      case 'hours':
+        startPosition = (task.startDate.getHours() - timelineStart.getHours()) * itemWidth;
+        duration = (task.endDate.getHours() - task.startDate.getHours() + 1) * itemWidth;
+        break;
+
+      case 'day':
+        startPosition = (task.startDate.getDate() - timelineStart.getDate()) * itemWidth;
+        duration = (task.endDate.getDate() - task.startDate.getDate() + 1) * itemWidth;
+        break;
+
+      case 'week':
+        startPosition =
+          Math.floor(
+            (task.startDate.getTime() - timelineStart.getTime()) / (7 * 24 * 60 * 60 * 1000)
+          ) * itemWidth;
+        duration =
+          Math.ceil(
+            (task.endDate.getTime() - task.startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
+          ) * itemWidth;
+        break;
+
+      case 'month':
+        startPosition = (task.startDate.getMonth() - timelineStart.getMonth()) * itemWidth;
+        duration = (task.endDate.getMonth() - task.startDate.getMonth() + 1) * itemWidth;
+        break;
+
+      case 'year':
+        startPosition = (task.startDate.getFullYear() - timelineStart.getFullYear()) * itemWidth;
+        duration = (task.endDate.getFullYear() - task.startDate.getFullYear() + 1) * itemWidth;
+        break;
+
+      case '5years':
+        startYear = Math.floor(timelineStart.getFullYear() / 5) * 5;
+        taskStartYear = Math.floor(task.startDate.getFullYear() / 5) * 5;
+        taskEndYear = Math.floor(task.endDate.getFullYear() / 5) * 5;
+        startPosition = ((taskStartYear - startYear) / 5) * itemWidth;
+        duration = ((taskEndYear - taskStartYear) / 5 + 1) * itemWidth;
+        break;
+    }
+
+    return {
+      left: `${startPosition}px`,
+      width: `${duration}px`,
+    };
+  };
+
   return (
     <GanttChartProvider value={{ data, getStyles }}>
       <Paper
@@ -384,10 +431,7 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
                       <Box
                         {...getStyles('taskBlock')}
                         data-mantine-color={task.color}
-                        style={{
-                          left: `${task.startDate.getDate() * 40}px`,
-                          width: `${(task.endDate.getDate() - task.startDate.getDate() + 1) * 40}px`,
-                        }}
+                        style={getTaskBlockStyle(task)}
                       />
                     </Box>
                   ))}

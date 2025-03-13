@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Stack } from '@mantine/core';
-import { GanttChart, GanttChartPresentation } from './GanttChart';
+import { GanttChart } from './GanttChart';
 
 export default { title: 'GanttChart' };
 
@@ -8,86 +7,52 @@ const defaultData = [
   {
     id: '1',
     title: 'Research',
-    startDate: new Date(2024, 2, 1),
-    endDate: new Date(2024, 2, 5),
+    startDate: new Date(2025, 3, 10, 12, 0, 0),
+    endDate: new Date(2025, 3, 16, 14, 0, 0),
     color: 'blue',
   },
   {
     id: '2',
     title: 'Design',
-    startDate: new Date(2024, 2, 3),
-    endDate: new Date(2024, 2, 8),
+    startDate: new Date(2025, 3, 14, 10, 0, 0),
+    endDate: new Date(2025, 3, 20, 12, 0, 0),
     color: 'green',
   },
   {
     id: '3',
     title: 'Development',
-    startDate: new Date(2024, 2, 6),
-    endDate: new Date(2024, 2, 15),
+    startDate: new Date(2025, 3, 18, 8, 0, 0),
+    endDate: new Date(2025, 3, 25, 20, 0, 0),
     color: 'orange',
   },
 ];
 
 export function Usage() {
-  return (
-    <Stack>
-      <GanttChart data={defaultData} />
-    </Stack>
-  );
+  return <GanttChart data={defaultData} />;
 }
 
 export function WithPresentationSelector() {
-  const [presentation, setPresentation] = useState<GanttChartPresentation>('month');
-
-  return (
-    <Stack>
-      <GanttChart
-        data={defaultData}
-        presentation={presentation}
-        onPresentationChange={setPresentation}
-      />
-    </Stack>
-  );
+  return <GanttChart data={defaultData} defaultPresentation="month" />;
 }
 
 export function Empty() {
-  return (
-    <Stack>
-      <GanttChart />
-    </Stack>
-  );
+  return <GanttChart />;
 }
 
 export function WithBorder() {
-  return (
-    <Stack>
-      <GanttChart data={defaultData} withBorder />
-    </Stack>
-  );
+  return <GanttChart data={defaultData} withBorder />;
 }
 
 export function WithShadow() {
-  return (
-    <Stack>
-      <GanttChart data={defaultData} shadow="md" />
-    </Stack>
-  );
+  return <GanttChart data={defaultData} shadow="md" />;
 }
 
 export function CustomPadding() {
-  return (
-    <Stack>
-      <GanttChart data={defaultData} padding="xl" />
-    </Stack>
-  );
+  return <GanttChart data={defaultData} padding="xl" />;
 }
 
 export function CustomRadius() {
-  return (
-    <Stack>
-      <GanttChart data={defaultData} radius="lg" />
-    </Stack>
-  );
+  return <GanttChart data={defaultData} radius="lg" />;
 }
 
 export function LongProject() {

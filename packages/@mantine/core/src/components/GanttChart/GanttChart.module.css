@@ -123,24 +123,25 @@
 
 .taskBlock {
   position: absolute;
-  height: 30px;
-  border-radius: 4px;
-  margin: 5px 0;
-  background: var(--mantine-color-blue-filled);
-  color: var(--mantine-color-white);
-  transition: background-color 150ms ease;
+  height: 24px;
+  border-radius: var(--mantine-radius-sm);
+  border: 1px solid var(--mantine-color-gray-3);
+  background-color: var(--mantine-color-blue-6);
+  transition: all 0.2s ease;
 }
 
 .taskBlock[data-mantine-color] {
-  background: var(--mantine-color-filled);
+  background-color: var(--mantine-color-filled);
+  border-color: var(--mantine-color-filled-hover);
 }
 
 .taskBlock:hover {
-  background: var(--mantine-color-blue-filled-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--mantine-shadow-sm);
 }
 
 .taskBlock[data-mantine-color]:hover {
-  background: var(--mantine-color-filled-hover);
+  background-color: var(--mantine-color-filled-hover);
 }
 
 .scrollContainer {
