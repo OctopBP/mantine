@@ -48,7 +48,8 @@ export type GanttChartStylesNames =
   | 'taskRow'
   | 'taskBlock'
   | 'presentationSelect'
-  | 'timelineItem';
+  | 'timelineItem'
+  | 'currentPeriod';
 
 export type GanttChartCssVariables = {
   root: '--gantt-chart-padding';
@@ -293,6 +294,32 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
     }
   };
 
+  const getCurrentPeriodLabel = () => {
+    const today = new Date();
+    let startYear: number;
+    switch (presentation) {
+      case 'hours':
+        return today.toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        });
+      case 'day':
+        return today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      case 'week':
+        return today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      case 'month':
+        return today.getFullYear().toString();
+      case 'year':
+        return today.getFullYear().toString();
+      case '5years':
+        startYear = Math.floor(today.getFullYear() / 5) * 5;
+        return `${startYear}-${startYear + 4}`;
+      default:
+        return '';
+    }
+  };
+
   return (
     <GanttChartProvider value={{ data, getStyles }}>
       <Paper
@@ -325,6 +352,9 @@ export const GanttChart = polymorphicFactory<GanttChartFactory>((_props, ref) =>
           {/* Right side: Calendar and task blocks */}
           <Box {...getStyles('rightSection')}>
             <Box {...getStyles('calendarHeader')}>
+              <Text size="sm" fw={500} {...getStyles('currentPeriod')}>
+                {getCurrentPeriodLabel()}
+              </Text>
               <Select
                 {...getStyles('presentationSelect')}
                 data={presentationOptions}

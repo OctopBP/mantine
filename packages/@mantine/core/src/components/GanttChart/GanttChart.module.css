@@ -51,10 +51,14 @@
   background-color: var(--mantine-color-body);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  height: 32px;
+  gap: var(--mantine-spacing-md);
   padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
-  border-bottom: rem(1px) solid var(--gantt-border-color);
+  border-bottom: 1px solid var(--mantine-color-gray-3);
+}
+
+.currentPeriod {
+  flex: 1;
+  color: var(--mantine-color-gray-7);
 }
 
 .calendarDays {
@@ -145,4 +149,5 @@
 
 .presentationSelect {
   width: 120px;
+  flex-shrink: 0;
 }
